@@ -42,7 +42,7 @@ const mainElement = document.querySelector('.container');
 
 //user가 등록한 상품 정보 가져오기
 async function getProductList() {
-  const response = await fetch(`http://146.56.183.55:5050/product/${accountName}`, {
+  const response = await fetch(`https://api.mandarin.cf/product/${accountName}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-type': 'application/json',
@@ -106,12 +106,10 @@ getProductList();
 
 async function setFollowBtn() {
   const addFollowBtn = document.querySelector('.btns-wrap');
-  // if ( accountName == thisUserId)
   if (accountName == userId) {
     addFollowBtn.innerHTML = `<a class="button button-ms line btn-mod profile-edit" href="/profile-mod"> 프로필 수정</a>
     <a class="button button-ms line move-product" href="/product">상품 등록</a>`;
   } else {
-    // getIsFollow(accountName);
     addFollowBtn.innerHTML = `<a class="imgbtn imgbtn-message" href="/chat">메시지</a>
     <button class="button-ms active-button" name="${accountName}"></button>
     <a class="imgbtn imgbtn-share" href="#">공유버튼
@@ -171,32 +169,8 @@ movefollowersPage();
 // else
 // 팔로우, 언팔로우 버튼
 
-//공통
-//이미지 클릭 시 모달창 함수
-// function openModal(e) {
-//   const modal = document.querySelector('hidden-menu');
-
-//   const clickImgBtn = document.querySelector('.product-img');
-//   clickImgBtn.addEventListener('click', () => { });
-// }
-
-// // 팔로워 페이지로 이동
-// function movefollowersPage() {
-//   followersNum.addEventListener('click', function () {
-//     location.href = '/follower';
-//   });
-// }
-// movefollowersPage();
-// // 팔로잉 페이지로 이동
-// function movefollowingPage() {
-//   followingsNum.addEventListener('click', function () {
-//     location.href = '/following';
-//   });
-// }
-// movefollowingPage();
-
 async function getIsFollow(accountname) {
-  const url = `http://146.56.183.55:5050/profile/${accountname}`;
+  const url = `https://api.mandarin.cf/profile/${accountname}`;
   const token = localStorage.getItem('token');
   const res = await fetch(url, {
     method: 'GET',

@@ -5,16 +5,15 @@ const inputBox = document.querySelectorAll('.label-input input');
 const productUrlBox = document.querySelector('#product-url');
 
 productUrlBox.addEventListener('focus', (event) => {
-  if (event.target.value == '') event.target.value = 'http://';
+  if (event.target.value == '') event.target.value = 'https://';
 });
 productUrlBox.addEventListener('blur', (event) => {
-  if (event.target.value == 'http://') event.target.value = '';
+  if (event.target.value == 'https://') event.target.value = '';
 });
 
 // input 값 변경 리스너 -> 저장버튼 활성화 시도
 [].forEach.call(inputBox, function (input) {
   input.addEventListener('input', (event) => {
-    // console.log(event.target.value);
     // 변경된 값이 빈문자열 즉 다 지웠다면 비운상태로 체크
     if (event.target.value === '') event.target.value = '';
     // 저장버튼 활성화 시도
@@ -56,7 +55,7 @@ function postProductImg() {
     const formData = new FormData();
     formData.append('image', imgInputBtn.files[0]);
 
-    fetch(`http://146.56.183.55:5050/image/uploadfile`, {
+    fetch(`https://api.mandarin.cf/image/uploadfile`, {
       method: 'POST',
       body: formData,
     })
@@ -72,10 +71,8 @@ function postProductImg() {
 async function postProductData() {
   const productName = document.querySelector('#product-name');
   const productPrice = document.querySelector('#product-price');
-  // const productImgName = window.productImgName;
-  console.log(productImgName);
   const price = parseInt(productPrice.value.replaceAll(',', ''), 10);
-  const url = `http://146.56.183.55:5050/product`;
+  const url = `https://api.mandarin.cf/product`;
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -87,15 +84,13 @@ async function postProductData() {
         itemName: productName.value,
         price: price,
         link: productUrlBox.value,
-        itemImage: `http://146.56.183.55:5050/${productImgName}`,
+        itemImage: `https://api.mandarin.cf/${productImgName}`,
       },
     }),
   });
 
   const data = await response.json();
-  console.log(data);
   if (data) {
-    // this.dataReset();
     window.location = `/profile/${localStorage.getItem('accountname')}`;
   }
 }
@@ -104,7 +99,7 @@ async function postProductData() {
 // 상품 정보 가져오기
 async function getProductData() {
   const productId = location.href.split('/product/')[1];
-  const response = await fetch(`http://146.56.183.55:5050/product/detail/${productId}`, {
+  const response = await fetch(`https://api.mandarin.cf/product/detail/${productId}`, {
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token'),
     },
@@ -114,7 +109,6 @@ async function getProductData() {
 
 // 현재 상품 정보 세팅
 async function setCurrentData() {
-  console.log('현재 상품 정보 세팅');
   const productName = document.querySelector('#product-name');
   const productPrice = document.querySelector('#product-price');
   const productUrl = document.querySelector('#product-url');
@@ -140,36 +134,31 @@ async function editProductData() {
   const productUrl = document.querySelector('#product-url');
   const productImgSrc = document.querySelector('.image-input-field img').src;
   const price = parseInt(productPrice.value.replaceAll(',', ''), 10);
-  const response = await fetch(
-    `http://146.56.183.55:5050/product/${location.href.split('/product/')[1]}`,
-    {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
+  const response = await fetch(`https://api.mandarin.cf/product/${location.href.split('/product/')[1]}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + localStorage.getItem('token'),
+    },
+    body: JSON.stringify({
+      product: {
+        itemName: productName.value,
+        price: price,
+        link: productUrl.value,
+        itemImage: productImgSrc,
       },
-      body: JSON.stringify({
-        product: {
-          itemName: productName.value,
-          price: price,
-          link: productUrl.value,
-          itemImage: productImgSrc,
-        },
-      }),
-    }
-  );
+    }),
+  });
 
   const data = await response.json();
-  console.log(data);
   if (data) {
-    // deleteProduct(location.href.split('/product/')[1]);
     window.location = `/profile/${localStorage.getItem('accountname')}`;
   }
 }
 
 // 상품 삭제
 async function deleteProduct(tagetId) {
-  const response = await fetch(`http://146.56.183.55:5050/product/${tagetId}`, {
+  const response = await fetch(`https://api.mandarin.cf/product/${tagetId}`, {
     method: 'DELETE',
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -185,12 +174,7 @@ async function deleteProduct(tagetId) {
 // url 형식 올바른지 체크
 function isValidUrl() {
   const urlRegexData = new RegExp(
-    '^(https?:\\/\\/)?' + // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-    '(\\#[-a-z\\d_]*)?$', // fragment locator
+    '^(https?:\\/\\/)?' + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + '((\\d{1,3}\\.){3}\\d{1,3}))' + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + '(\\?[;&a-z\\d%_.~+=-]*)?' + '(\\#[-a-z\\d_]*)?$',
     'i'
   );
 
@@ -204,8 +188,6 @@ function isFilledAll() {
   inputBox.forEach((item) => {
     if (item.value === '') {
       flag = false;
-      // break;
-      // return false;
     }
   });
   return flag ? true : false;
@@ -224,5 +206,3 @@ window.addEventListener('DOMContentLoaded', () => {
   if (location.href.split('product')[1] != '') setCurrentData();
   postProductImg();
 });
-
-
